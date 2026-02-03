@@ -614,3 +614,142 @@ p {
     margin-bottom: 2rem;
     color: var(--primary-color);
 }
+/* ===== DEVELOPER PROFILE SECTION ===== */
+.developer-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%);
+    border-radius: 15px;
+}
+
+.developer-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 3rem rgba(78, 115, 223, 0.15) !important;
+}
+
+.profile-image {
+    transition: transform 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+}
+
+/* Social Media Links */
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.social-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: 2px solid transparent;
+}
+
+.github-btn {
+    background: #333333;
+}
+
+.github-btn:hover {
+    background: #1a1a1a;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(51, 51, 51, 0.3);
+}
+
+.linkedin-btn {
+    background: #0077B5;
+}
+
+.linkedin-btn:hover {
+    background: #005885;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 119, 181, 0.3);
+}
+
+.instagram-btn {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.instagram-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(224, 100, 51, 0.3);
+}
+
+.email-btn {
+    background: #EA4335;
+}
+
+.email-btn:hover {
+    background: #c5221f;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(234, 67, 53, 0.3);
+}
+
+/* Contact Info */
+.contact-info {
+    background: #f8f9fc;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.contact-info div {
+    font-size: 0.95rem;
+}
+
+/* Skills Section */
+.skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    padding: 15px 0;
+}
+
+.skill-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.skill-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .profile-image {
+        width: 140px !important;
+        height: 140px !important;
+    }
+
+    .social-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+
+    .social-links {
+        gap: 10px;
+    }
+
+    .skill-badge {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}
