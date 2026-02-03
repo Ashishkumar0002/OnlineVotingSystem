@@ -1,0 +1,593 @@
+<!-- ========================================
+     ADMIN DASHBOARD - ALL IN ONE PAGE
+     ======================================== -->
+
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Online Voting System{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+            <p class="text-muted">Manage voters, candidates, and election</p>
+        </div>
+        <div>
+            <a href="{{ url_for('admin.change_password') }}" class="btn btn-primary">
+                <i class="fas fa-key"></i> Change Password
+            </a>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-2 mb-3">
+            <div class="card border-left-primary shadow">
+                <div class="card-body">
+                    <div class="text-primary font-weight-bold text-uppercase mb-1">Total Voters</div>
+                    <div class="h3 mb-0">{{ total_voters }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="card border-left-success shadow">
+                <div class="card-body">
+                    <div class="text-success font-weight-bold text-uppercase mb-1">Approved</div>
+                    <div class="h3 mb-0">{{ approved_voters }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="card border-left-warning shadow">
+                <div class="card-body">
+                    <div class="text-warning font-weight-bold text-uppercase mb-1">Pending Voters</div>
+                    <div class="h3 mb-0">{{ pending_voter_count }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="card border-left-info shadow">
+                <div class="card-body">
+                    <div class="text-info font-weight-bold text-uppercase mb-1">Total Votes</div>
+                    <div class="h3 mb-0">{{ total_votes }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="card border-left-purple shadow">
+                <div class="card-body">
+                    <div style="color: #6f42c1;" class="font-weight-bold text-uppercase mb-1">Candidates</div>
+                    <div class="h3 mb-0">{{ approved_candidates }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="statistics-tab" data-bs-toggle="tab" data-bs-target="#statistics" type="button" role="tab">
+                <i class="fas fa-chart-bar"></i> Statistics
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="voters-tab" data-bs-toggle="tab" data-bs-target="#voters" type="button" role="tab">
+                <i class="fas fa-users"></i> Pending Voters ({{ pending_voter_count }})
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="candidates-tab" data-bs-toggle="tab" data-bs-target="#candidates" type="button" role="tab">
+                <i class="fas fa-user-tie"></i> Pending Candidates
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab">
+                <i class="fas fa-check-circle"></i> Active Candidates
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button" role="tab">
+                <i class="fas fa-history"></i> Voting Logs
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="adminTabContent">
+        
+        <!-- STATISTICS TAB -->
+        <div class="tab-pane fade show active" id="statistics" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Candidate Votes Distribution</h5>
+                        </div>
+                        <div class="card-body" style="position: relative; height: 300px;">
+                            <canvas id="candidatesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-cog"></i> Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary" onclick="document.getElementById('voters-tab').click()">
+                                    <i class="fas fa-check"></i> Review Pending Voters ({{ pending_voter_count }})
+                                </button>
+                                <button class="btn btn-primary" onclick="document.getElementById('candidates-tab').click()">
+                                    <i class="fas fa-list-check"></i> Review Candidate Nominations
+                                </button>
+                                <button class="btn btn-warning" id="resetElectionBtn">
+                                    <i class="fas fa-sync"></i> Reset Election
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if active_candidates %}
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-trophy"></i> Ranking</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 80px;">Rank</th>
+                                <th>Candidate Name</th>
+                                <th>Party</th>
+                                <th style="width: 150px;">Votes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for candidate in active_candidates %}
+                            <tr>
+                                <td>
+                                    {% if loop.index == 1 %}
+                                        <span class="badge bg-warning text-dark"><i class="fas fa-crown"></i> 1st</span>
+                                    {% elif loop.index == 2 %}
+                                        <span class="badge bg-secondary"><i class="fas fa-medal"></i> 2nd</span>
+                                    {% elif loop.index == 3 %}
+                                        <span class="badge bg-secondary"><i class="fas fa-medal"></i> 3rd</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ loop.index }}</span>
+                                    {% endif %}
+                                </td>
+                                <td><strong>{{ candidate.name }}</strong></td>
+                                <td><span class="badge badge-info">{{ candidate.party }}</span></td>
+                                <td><span class="badge bg-success">{{ candidate.votes }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- PENDING VOTERS TAB -->
+        <div class="tab-pane fade" id="voters" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-hourglass-half"></i> Pending Voter Approvals</h5>
+                </div>
+
+                {% if not pending_voters %}
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No pending voter registrations at this time.
+                    </div>
+                </div>
+                {% else %}
+
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th><i class="fas fa-user"></i> Name</th>
+                                <th><i class="fas fa-envelope"></i> Email</th>
+                                <th><i class="fas fa-phone"></i> Phone</th>
+                                <th><i class="fas fa-id-card"></i> Aadhaar</th>
+                                <th><i class="fas fa-briefcase"></i> Occupation</th>
+                                <th><i class="fas fa-calendar"></i> Applied Date</th>
+                                <th class="text-center" style="width: 150px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for voter in pending_voters %}
+                            <tr>
+                                <td><strong>{{ voter.name }}</strong></td>
+                                <td>{{ voter.email }}</td>
+                                <td>{{ voter.phone }}</td>
+                                <td>****-****-{{ voter.aadhaar[-4:] }}</td>
+                                <td>{{ voter.occupation }}</td>
+                                <td><small class="text-muted">{{ voter.applied_on }}</small></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-success" onclick="approveVoter({{ voter.id }})" title="Approve">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="rejectVoter({{ voter.id }})" title="Reject">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- PENDING CANDIDATES TAB -->
+        <div class="tab-pane fade" id="candidates" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-user-tie"></i> Pending Candidate Nominations</h5>
+                </div>
+
+                {% if not pending_candidates %}
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No pending candidate nominations at this time.
+                    </div>
+                </div>
+                {% else %}
+
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th><i class="fas fa-user"></i> Name</th>
+                                <th><i class="fas fa-flag"></i> Party</th>
+                                <th><i class="fas fa-envelope"></i> Email</th>
+                                <th><i class="fas fa-info-circle"></i> Status</th>
+                                <th><i class="fas fa-calendar"></i> Applied Date</th>
+                                <th class="text-center" style="width: 150px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for candidate in pending_candidates %}
+                            <tr>
+                                <td><strong>{{ candidate.name }}</strong></td>
+                                <td><span class="badge badge-info">{{ candidate.party }}</span></td>
+                                <td>{{ candidate.email }}</td>
+                                <td>
+                                    {% if candidate.status == 'pending' %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                    {% endif %}
+                                </td>
+                                <td><small class="text-muted">{{ candidate.applied_on }}</small></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-success" onclick="approveCandidate({{ candidate.id }})" title="Approve">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="rejectCandidate({{ candidate.id }})" title="Reject">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ACTIVE CANDIDATES TAB -->
+        <div class="tab-pane fade" id="active" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-check-circle"></i> Active Candidates in Election</h5>
+                </div>
+
+                {% if not active_candidates %}
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No active candidates in election yet.
+                    </div>
+                </div>
+                {% else %}
+
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th><i class="fas fa-user"></i> Candidate Name</th>
+                                <th><i class="fas fa-flag"></i> Political Party</th>
+                                <th><i class="fas fa-vote-yea"></i> Votes Received</th>
+                                <th style="width: 100px;" class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for candidate in active_candidates %}
+                            <tr>
+                                <td><strong>{{ candidate.name }}</strong></td>
+                                <td><span class="badge badge-info">{{ candidate.party }}</span></td>
+                                <td>
+                                    <span class="badge bg-success" style="font-size: 14px;">
+                                        <i class="fas fa-check-circle"></i> {{ candidate.votes }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-danger" onclick="removeCandidate({{ candidate.id }})" title="Remove from Election">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- VOTING LOGS TAB -->
+        <div class="tab-pane fade" id="logs" role="tabpanel">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-history"></i> Voting Activity Logs</h5>
+                </div>
+
+                {% if not voting_logs %}
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No voting activity logs yet.
+                    </div>
+                </div>
+                {% else %}
+
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 150px;"><i class="fas fa-id-card"></i> Voter ID</th>
+                                <th><i class="fas fa-clipboard"></i> Action</th>
+                                <th style="width: 200px;"><i class="fas fa-clock"></i> Timestamp</th>
+                                <th style="width: 120px;"><i class="fas fa-globe"></i> IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in voting_logs %}
+                            <tr>
+                                <td><code>{{ log.voter_id }}</code></td>
+                                <td>
+                                    {% if 'approved' in log.action.lower() %}
+                                        <span class="badge bg-success">{{ log.action }}</span>
+                                    {% elif 'rejected' in log.action.lower() %}
+                                        <span class="badge bg-danger">{{ log.action }}</span>
+                                    {% elif 'voted' in log.action.lower() %}
+                                        <span class="badge bg-primary">{{ log.action }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ log.action }}</span>
+                                    {% endif %}
+                                </td>
+                                <td><small class="text-muted">{{ log.timestamp }}</small></td>
+                                <td><small class="text-muted">{{ log.ip }}</small></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+
+<script>
+// Initialize Bootstrap tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    // Chart data
+    const candidatesData = [
+        {% for candidate in active_candidates %}
+        { name: '{{ candidate.name }}', votes: {{ candidate.votes }} },
+        {% endfor %}
+    ];
+    
+    // Draw chart if candidates exist
+    if (candidatesData.length > 0 && document.getElementById('candidatesChart')) {
+        const ctx = document.getElementById('candidatesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: candidatesData.map(c => c.name),
+                datasets: [{
+                    label: 'Votes Received',
+                    data: candidatesData.map(c => c.votes),
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74c3c'],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+
+// Approve voter function
+function approveVoter(voterId) {
+    if (confirm('Are you sure you want to approve this voter?')) {
+        fetch(`/admin/voter/${voterId}/approve`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
+
+// Reject voter function
+function rejectVoter(voterId) {
+    if (confirm('Are you sure you want to reject this voter?')) {
+        fetch(`/admin/voter/${voterId}/reject`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
+
+// Approve candidate function
+function approveCandidate(candidateId) {
+    if (confirm('Are you sure you want to approve this candidate?')) {
+        fetch(`/admin/candidate/${candidateId}/approve`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
+
+// Reject candidate function
+function rejectCandidate(candidateId) {
+    if (confirm('Are you sure you want to reject this candidate?')) {
+        fetch(`/admin/candidate/${candidateId}/reject`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
+
+// Remove candidate function
+function removeCandidate(candidateId) {
+    if (confirm('Are you sure you want to remove this candidate from the election? This action cannot be undone.')) {
+        fetch(`/admin/candidate/${candidateId}/remove`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
+
+// Reset election function
+document.getElementById('resetElectionBtn').addEventListener('click', function() {
+    if (confirm('⚠️ WARNING: Are you sure you want to reset the election? All votes will be deleted and this CANNOT be undone!')) {
+        fetch('{{ url_for("admin.reset_election") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+});
+</script>
+
+<style>
+.border-left-primary {
+    border-left: 4px solid #4e73df;
+}
+.border-left-success {
+    border-left: 4px solid #1cc88a;
+}
+.border-left-warning {
+    border-left: 4px solid #f6c23e;
+}
+.border-left-info {
+    border-left: 4px solid #36b9cc;
+}
+.border-left-purple {
+    border-left: 4px solid #6f42c1;
+}
+</style>
+
+{% endblock %}
