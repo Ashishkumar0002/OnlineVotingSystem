@@ -1,0 +1,132 @@
+<!-- 404 Not Found Error Page -->
+<!-- This page is displayed when a user tries to access a page that doesn't exist -->
+{% extends 'base.html' %}
+
+<!-- Page content block - inherited from base.html -->
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+        <div class="col-md-6 text-center">
+            <!-- Large error code -->
+            <h1 style="font-size: 120px; color: #e74c3c; font-weight: bold; margin: 0;">
+                404
+            </h1>
+
+            <!-- Error title -->
+            <h2 class="mb-3">
+                <i class="fas fa-exclamation-triangle text-warning"></i> Page Not Found
+            </h2>
+
+            <!-- Error description -->
+            <p class="text-muted mb-4">
+                The page you're looking for doesn't exist or has been moved. 
+                It might have been removed or the URL might be incorrect.
+            </p>
+
+            <!-- Helpful information -->
+            <div class="alert alert-info mb-4">
+                <p class="mb-0">
+                    <i class="fas fa-lightbulb"></i> 
+                    Check the URL for typos or use the navigation menu to find what you're looking for.
+                </p>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="d-flex gap-2 justify-content-center">
+                <!-- Go back button -->
+                <button class="btn btn-primary" onclick="window.history.back();">
+                    <i class="fas fa-arrow-left"></i> Go Back
+                </button>
+
+                <!-- Go to home button -->
+                <a href="{{ url_for('main.index') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-home"></i> Go to Home
+                </a>
+            </div>
+
+            <!-- Quick links if user is logged in -->
+            {% if logged_in_user %}
+            <hr class="my-4">
+            <h5 class="mb-3">Quick Links</h5>
+            <div class="list-group list-group-flush">
+                <!-- Show different links based on user role -->
+                {% if logged_in_user.role == 'admin' %}
+                    <a href="{{ url_for('admin.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line"></i> Admin Dashboard
+                    </a>
+                {% elif logged_in_user.role == 'voter' %}
+                    <a href="{{ url_for('voter.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line"></i> Voter Dashboard
+                    </a>
+                {% elif logged_in_user.role == 'candidate' %}
+                    <a href="{{ url_for('candidate.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line"></i> Candidate Dashboard
+                    </a>
+                {% endif %}
+
+                <!-- Results link for all users -->
+                <a href="{{ url_for('main.results') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-chart-bar"></i> View Results
+                </a>
+
+                <!-- Contact link -->
+                <a href="{{ url_for('main.contact') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-envelope"></i> Contact Us
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- CSS styling for error page -->
+<style>
+/* Center alignment utility -->
+.justify-content-center {
+    justify-content: center;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Margin utilities -->
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.my-4 {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+/* Flexbox utilities -->
+.d-flex {
+    display: flex;
+}
+
+/* Button spacing -->
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+/* List group styling -->
+.list-group-item {
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+</style>
+{% endblock %}

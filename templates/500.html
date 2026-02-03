@@ -1,0 +1,225 @@
+<!-- 500 Server Error Page -->
+<!-- This page is displayed when a server error occurs during request processing -->
+{% extends 'base.html' %}
+
+<!-- Page content block - inherited from base.html -->
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+        <div class="col-md-6 text-center">
+            <!-- Large error code -->
+            <h1 style="font-size: 120px; color: #e74c3c; font-weight: bold; margin: 0;">
+                500
+            </h1>
+
+            <!-- Error title -->
+            <h2 class="mb-3">
+                <i class="fas fa-server text-danger"></i> Server Error
+            </h2>
+
+            <!-- Error description -->
+            <p class="text-muted mb-4">
+                Something went wrong on our server. The issue has been logged and our team has been notified. 
+                We apologize for the inconvenience.
+            </p>
+
+            <!-- Helpful information -->
+            <div class="alert alert-danger mb-4">
+                <p class="mb-0">
+                    <i class="fas fa-exclamation-circle"></i> 
+                    Please try again later or contact support if the problem persists.
+                </p>
+            </div>
+
+            <!-- What to do section -->
+            <div class="alert alert-info mb-4">
+                <h6>What you can try:</h6>
+                <ul class="mb-0 text-start">
+                    <li>Refresh the page (Press F5 or Ctrl+R)</li>
+                    <li>Clear your browser cache and cookies</li>
+                    <li>Try again in a few moments</li>
+                    <li>Contact our support team for assistance</li>
+                </ul>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="d-flex gap-2 justify-content-center">
+                <!-- Refresh page button -->
+                <button class="btn btn-primary" onclick="location.reload();">
+                    <i class="fas fa-sync"></i> Refresh Page
+                </button>
+
+                <!-- Go to home button -->
+                <a href="{{ url_for('main.index') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-home"></i> Go to Home
+                </a>
+            </div>
+
+            <!-- Quick links if user is logged in -->
+            {% if logged_in_user %}
+            <hr class="my-4">
+            <h5 class="mb-3">Quick Links</h5>
+            <div class="list-group list-group-flush">
+                <!-- Show different links based on user role -->
+                {% if logged_in_user.role == 'admin' %}
+                    <a href="{{ url_for('admin.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line"></i> Admin Dashboard
+                    </a>
+                {% elif logged_in_user.role == 'voter' %}
+                    <a href="{{ url_for('voter.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line"></i> Voter Dashboard
+                    </a>
+                {% elif logged_in_user.role == 'candidate' %}
+                    <a href="{{ url_for('candidate.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line"></i> Candidate Dashboard
+                    </a>
+                {% endif %}
+
+                <!-- Results link for all users -->
+                <a href="{{ url_for('main.results') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-chart-bar"></i> View Results
+                </a>
+
+                <!-- Contact link for support -->
+                <a href="{{ url_for('main.contact') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-envelope"></i> Contact Support
+                </a>
+            </div>
+            {% else %}
+            <!-- For unauthenticated users -->
+            <hr class="my-4">
+            <h5 class="mb-3">Need Help?</h5>
+            <div class="list-group list-group-flush">
+                <a href="{{ url_for('main.index') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="{{ url_for('main.contact') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-envelope"></i> Contact Us
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Contact information -->
+            <hr class="my-4">
+            <h6 class="text-muted">
+                <i class="fas fa-headset"></i> Support Team
+            </h6>
+            <p class="small text-muted">
+                Email: support@votingsystem.com<br>
+                Phone: +91 (011) 1234-5678<br>
+                Available: Mon-Fri, 9 AM - 6 PM
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- CSS styling for error page -->
+<style>
+/* Center alignment utility -->
+.justify-content-center {
+    justify-content: center;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-start {
+    text-align: start;
+}
+
+/* Margin utilities -->
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.my-4 {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+/* Flexbox utilities */
+.d-flex {
+    display: flex;
+}
+
+/* Text utilities */
+.text-muted {
+    color: #6c757d;
+}
+
+.text-danger {
+    color: #dc3545;
+}
+
+.small {
+    font-size: 0.875rem;
+}
+
+.h6 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Button spacing */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+/* List group styling */
+.list-group {
+    margin-top: 1rem;
+}
+
+.list-group-item {
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    border: 1px solid #dee2e6;
+    text-decoration: none;
+    color: #4e73df;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fc;
+    color: #2e59d9;
+}
+
+/* Alert styling */
+.alert {
+    border-radius: 8px;
+}
+
+.alert ul {
+    padding-left: 1.5rem;
+}
+
+.alert ul li {
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive spacing */
+hr {
+    margin: 2rem 0;
+}
+</style>
+{% endblock %}
