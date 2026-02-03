@@ -1,0 +1,203 @@
+<!-- ========================================
+     VOTER RESULTS PAGE
+     ======================================== -->
+
+{% extends "base.html" %}
+
+{% block title %}Election Results - Voter View - Online Voting System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <!-- Page Title -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold text-primary mb-2">
+                <i class="fas fa-chart-bar"></i> Election Results
+            </h1>
+            <p class="text-secondary">Live vote counts for all candidates</p>
+        </div>
+    </div>
+    
+    <!-- Summary Stats -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon text-primary">
+                    <i class="fas fa-vote-yea"></i>
+                </div>
+                <div class="stat-number">{{ total_votes }}</div>
+                <div class="stat-label">Total Votes Cast</div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon text-success">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="stat-number">{{ candidates|length }}</div>
+                <div class="stat-label">Candidates</div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-icon text-info">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Results Live</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Results Table -->
+    {% if candidates %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Candidate Rankings</h5>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Rank</th>
+                                <th>Candidate</th>
+                                <th>Party</th>
+                                <th>Votes</th>
+                                <th>Percentage</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for candidate in candidates %}
+                            {% set percentage = (candidate.votes / total_votes * 100) if total_votes > 0 else 0 %}
+                            <tr>
+                                <td>
+                                    {% if loop.index == 1 %}
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-crown"></i> 1st
+                                        </span>
+                                    {% elif loop.index == 2 %}
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-medal"></i> 2nd
+                                        </span>
+                                    {% elif loop.index == 3 %}
+                                        <span class="badge bg-info">3rd</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ loop.index }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold">{{ candidate.name }}</td>
+                                <td>{{ candidate.party }}</td>
+                                <td>
+                                    <span class="h5 text-primary fw-bold">{{ candidate.votes }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">{{ "%.1f"|format(percentage) }}%</span>
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ percentage }}%; background-color: #4e73df;"
+                                             aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chart Visualization -->
+    {% if candidates|length > 1 %}
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Vote Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="resultsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Information Box -->
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h6 class="fw-bold mb-2">
+                    <i class="fas fa-info-circle"></i> Results Information
+                </h6>
+                <ul class="mb-0">
+                    <li>Results are updated in real-time as votes are cast</li>
+                    <li>All percentages are calculated based on total votes cast</li>
+                    <li>Final results will be announced after voting period ends</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- No Results -->
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                No results available yet. Voting is in progress.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+
+<!-- Chart Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chartElement = document.getElementById('resultsChart');
+    
+    if (chartElement) {
+        const candidates = [
+            {% for candidate in candidates %}
+            { name: '{{ candidate.name }}', party: '{{ candidate.party }}', votes: {{ candidate.votes }} },
+            {% endfor %}
+        ];
+        
+        const ctx = chartElement.getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: candidates.map(c => c.name + ' (' + c.party + ')'),
+                datasets: [{
+                    data: candidates.map(c => c.votes),
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74c3c', '#9b59b6'],
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 15, font: { size: 12 } }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,201 @@
+<!-- ========================================
+     VOTING PAGE - STEP 3: CAST VOTE
+     ======================================== -->
+
+{% extends "base.html" %}
+
+{% block title %}Cast Your Vote - Step 3 - Online Voting System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <!-- Progress indicator -->
+            <div class="mb-4">
+                <h5 class="mb-2">Voting Process</h5>
+                <div class="progress" style="height: 25px;">
+                    <div class="progress-bar bg-success" style="width: 100%;">Step 3/3</div>
+                </div>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="alert alert-primary">
+                <h6 class="fw-bold mb-2">
+                    <i class="fas fa-info-circle"></i> Cast Your Vote
+                </h6>
+                <p class="mb-0">
+                    Select your preferred candidate below and click "Cast Vote" to submit your vote. 
+                    Once submitted, you cannot change your vote. Please choose carefully.
+                </p>
+            </div>
+            
+            <!-- Voting Form -->
+            <form method="POST" class="needs-validation" novalidate>
+                <!-- Candidates Grid -->
+                <div class="row mb-4">
+                    {% if candidates %}
+                        {% for candidate in candidates %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 candidate-card" style="cursor: pointer; border: 2px solid transparent;">
+                                <!-- Candidate Image -->
+                                <img src="{{ candidate.image or 'https://via.placeholder.com/300x250' }}" 
+                                     class="card-img-top" alt="{{ candidate.name }}" style="height: 200px; object-fit: cover;">
+                                
+                                <div class="card-body">
+                                    <!-- Candidate Name -->
+                                    <h5 class="card-title fw-bold">{{ candidate.name }}</h5>
+                                    
+                                    <!-- Party -->
+                                    <p class="card-text">
+                                        <i class="fas fa-flag"></i> <strong>{{ candidate.party }}</strong>
+                                    </p>
+                                    
+                                    <!-- Selection Radio Button (hidden, triggered by click) -->
+                                    <div class="form-check">
+                                        <input class="form-check-input candidate-option" type="radio" 
+                                               name="candidate_id" value="{{ candidate.id }}" 
+                                               id="candidate_{{ candidate.id }}">
+                                        <label class="form-check-label w-100" for="candidate_{{ candidate.id }}">
+                                            <span class="btn btn-outline-primary w-100 mt-2">
+                                                <i class="fas fa-check-circle"></i> Select
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- No candidates message -->
+                        <div class="col-12">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                No candidates are available at this time.
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Selected Candidate Display -->
+                <div class="mb-4" id="selectedDisplay" style="display: none;">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <p class="mb-0">You have selected:</p>
+                            <h4 class="text-primary fw-bold mt-2" id="selectedName"></h4>
+                            <p class="text-secondary mb-0" id="selectedParty"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Confirmation Warning -->
+                <div class="alert alert-warning" role="alert">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fas fa-exclamation-triangle"></i> Important
+                    </h6>
+                    <p class="mb-0">
+                        Once you cast your vote, it cannot be changed. Please verify your selection before clicking 
+                        "Cast Vote". Your vote will be recorded and counted in the election results.
+                    </p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2 justify-content-center">
+                    <!-- Cast Vote Button -->
+                    <button type="submit" class="btn btn-success btn-lg" id="castVoteBtn" disabled>
+                        <i class="fas fa-vote-yea"></i> Cast Vote
+                    </button>
+                    
+                    <!-- Back Button -->
+                    <a href="{{ url_for('voter.vote_step2') }}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Candidate Selection Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const candidateOptions = document.querySelectorAll('.candidate-option');
+    const candidateCards = document.querySelectorAll('.candidate-card');
+    const castVoteBtn = document.getElementById('castVoteBtn');
+    const selectedDisplay = document.getElementById('selectedDisplay');
+    const selectedName = document.getElementById('selectedName');
+    const selectedParty = document.getElementById('selectedParty');
+    
+    // Add click event to cards
+    candidateCards.forEach((card, index) => {
+        card.addEventListener('click', function() {
+            // Uncheck all radio buttons
+            candidateOptions.forEach(option => option.checked = false);
+            
+            // Check the corresponding radio button
+            candidateOptions[index].checked = true;
+            
+            // Update card styling
+            candidateCards.forEach(c => c.style.borderColor = 'transparent');
+            card.style.borderColor = '#4e73df';
+            
+            // Show selected candidate
+            const name = card.querySelector('.card-title').textContent;
+            const party = card.querySelector('.card-text').textContent.replace(/^.*?: (.+)$/, '$1');
+            selectedName.textContent = name;
+            selectedParty.textContent = party;
+            selectedDisplay.style.display = 'block';
+            
+            // Enable cast vote button
+            castVoteBtn.disabled = false;
+        });
+    });
+    
+    // Also handle radio button change
+    candidateOptions.forEach((option, index) => {
+        option.addEventListener('change', function() {
+            if (this.checked) {
+                candidateCards[index].click();
+            }
+        });
+    });
+    
+    // Form validation
+    const form = document.querySelector('.needs-validation');
+    form.addEventListener('submit', function(event) {
+        // Check if candidate is selected
+        const selectedCandidate = document.querySelector('input[name="candidate_id"]:checked');
+        if (!selectedCandidate) {
+            event.preventDefault();
+            event.stopPropagation();
+            alert('Please select a candidate before voting');
+            return false;
+        }
+        
+        // Confirm vote
+        if (!confirm('Are you sure you want to vote for: ' + selectedName.textContent + '?\n\nThis action cannot be undone.')) {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+        
+        form.classList.add('was-validated');
+    });
+});
+</script>
+
+<style>
+/* Candidate card hover effect */
+.candidate-card {
+    transition: all 0.3s ease;
+}
+
+.candidate-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 2rem 0 rgba(78, 115, 223, 0.3);
+}
+
+.candidate-card[style*="border-color: rgb(78, 115, 223)"] {
+    background-color: #f0f4ff;
+}
+</style>
+{% endblock %}

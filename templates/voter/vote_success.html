@@ -1,0 +1,91 @@
+<!-- ========================================
+     VOTE SUCCESS PAGE - Thank You
+     ======================================== -->
+
+{% extends "base.html" %}
+
+{% block title %}Thank You - Vote Submitted - Online Voting System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto text-center">
+            <!-- Success Icon -->
+            <div style="font-size: 4rem; color: #1cc88a; margin-bottom: 1rem;">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <!-- Thank You Message -->
+            <h1 class="display-4 fw-bold text-success mb-3">
+                Thank You for Voting!
+            </h1>
+            
+            <!-- Message -->
+            <p class="lead text-secondary mb-4">
+                Your vote has been successfully recorded and will be counted in the election results.
+            </p>
+            
+            <!-- Success Details Card -->
+            <div class="card bg-light mb-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Voting Complete</h5>
+                    <p class="mb-2">
+                        <i class="fas fa-check text-success"></i> 
+                        <strong>Your vote has been securely recorded</strong>
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-shield-alt text-success"></i> 
+                        <strong>Your vote remains completely confidential</strong>
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-chart-bar text-success"></i> 
+                        <strong>Results will be displayed after voting ends</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Information -->
+            <div class="alert alert-info">
+                <h6 class="fw-bold mb-2">
+                    <i class="fas fa-info-circle"></i> Important Information
+                </h6>
+                <ul class="mb-0 text-start">
+                    <li>You have successfully completed the voting process</li>
+                    <li>You cannot vote again in this election</li>
+                    <li>Check the results page to see updated vote counts</li>
+                    <li>Your vote has been encrypted and securely stored</li>
+                </ul>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                <!-- Voter Dashboard -->
+                <a href="{{ url_for('voter.dashboard') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-home"></i> Go to Dashboard
+                </a>
+                
+                <!-- View Results -->
+                <a href="{{ url_for('voter.results') }}" class="btn btn-success btn-lg">
+                    <i class="fas fa-chart-bar"></i> View Results
+                </a>
+                
+                <!-- Home Page -->
+                <a href="{{ url_for('main.index') }}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-home-alt"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Auto-redirect script (optional - redirects after 5 seconds) -->
+<script>
+// Redirect to dashboard after 5 seconds (optional)
+// Uncomment to enable auto-redirect
+/*
+setTimeout(function() {
+    window.location.href = '{{ url_for("voter.dashboard") }}';
+}, 5000);
+*/
+</script>
+{% endblock %}

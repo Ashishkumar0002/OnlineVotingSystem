@@ -1,0 +1,148 @@
+<!-- ========================================
+     VOTER DASHBOARD
+     ======================================== -->
+
+{% extends "base.html" %}
+
+{% block title %}Voter Dashboard - Online Voting System{% endblock %}
+
+{% block content %}
+<div style="display: flex; min-height: 100vh;">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/voter-avatar.jpg') }}" alt="Voter" class="user-avatar" onerror="this.src='https://via.placeholder.com/80'">
+            <div class="user-name">{{ user.name }}</div>
+            <span class="user-role">Voter</span>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="{{ url_for('voter.dashboard') }}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="{{ url_for('voter.vote_step1') }}"><i class="fas fa-vote-yea"></i> Cast Vote</a></li>
+            <li><a href="{{ url_for('voter.results') }}"><i class="fas fa-chart-bar"></i> View Results</a></li>
+            <li><a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+    
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <h1 class="mb-4">Welcome, {{ user.name }}!</h1>
+        
+        <!-- Voter Information Card -->
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Your Voter Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <strong>Voter ID:</strong><br>
+                                <code class="text-primary">{{ voter.voter_id }}</code>
+                                <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('{{ voter.voter_id }}')">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Email:</strong><br>
+                                {{ user.email }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Phone:</strong><br>
+                                {{ voter.phone_number }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong>Registration Status:</strong><br>
+                                <span class="badge bg-success">Approved</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Voting Status Card -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Voting Status</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        {% if has_voted %}
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle" style="font-size: 2rem;"></i>
+                                <p class="mt-2 mb-0"><strong>You have voted</strong></p>
+                                <small class="text-muted">{{ voter.voted_at.strftime('%d %b %Y, %H:%M') }}</small>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-circle" style="font-size: 2rem;"></i>
+                                <p class="mt-2 mb-0"><strong>You haven't voted yet</strong></p>
+                                <small class="text-muted">Click "Cast Vote" to vote</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 class="mb-3">Quick Actions</h3>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-vote-yea" style="font-size: 2rem; color: #4e73df; margin-bottom: 1rem;"></i>
+                        <h5 class="card-title">Cast Your Vote</h5>
+                        <p class="card-text">Vote for your preferred candidate in the election</p>
+                        {% if not has_voted %}
+                            <a href="{{ url_for('voter.vote_step1') }}" class="btn btn-primary">
+                                <i class="fas fa-arrow-right"></i> Vote Now
+                            </a>
+                        {% else %}
+                            <button class="btn btn-secondary" disabled>
+                                <i class="fas fa-check"></i> Already Voted
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-bar" style="font-size: 2rem; color: #1cc88a; margin-bottom: 1rem;"></i>
+                        <h5 class="card-title">View Results</h5>
+                        <p class="card-text">Check the current election results and vote counts</p>
+                        <a href="{{ url_for('voter.results') }}" class="btn btn-success">
+                            <i class="fas fa-arrow-right"></i> View Results
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Information Section -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-info-circle"></i> Important Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="mb-0">
+                            <li class="mb-2"><strong>Vote Secrecy:</strong> Your vote is completely confidential. No one can see who you voted for.</li>
+                            <li class="mb-2"><strong>One Vote:</strong> You can vote only once. After voting, you cannot vote again.</li>
+                            <li class="mb-2"><strong>Identity Verification:</strong> You will need to enter your Voter ID and verify with OTP during voting.</li>
+                            <li class="mb-0"><strong>Results:</strong> Final results will be displayed after the voting period ends.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

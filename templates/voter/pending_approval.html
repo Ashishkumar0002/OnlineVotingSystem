@@ -1,0 +1,88 @@
+<!-- ========================================
+     VOTER PENDING APPROVAL PAGE
+     ======================================== -->
+
+{% extends "base.html" %}
+
+{% block title %}Registration Pending - Online Voting System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <!-- Pending Status Card -->
+            <div class="card">
+                <div class="card-body text-center p-5">
+                    <!-- Pending Icon -->
+                    <div style="font-size: 4rem; color: #f6c23e; margin-bottom: 1rem;">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    
+                    <!-- Message -->
+                    <h2 class="fw-bold text-warning mb-3">Registration Pending</h2>
+                    <p class="lead text-secondary mb-4">
+                        Your voter registration is pending administrator approval.
+                    </p>
+                    
+                    <!-- Details -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body text-start">
+                            <h5 class="fw-bold mb-3">Registration Details</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <small class="text-secondary">Name</small>
+                                    <p class="fw-bold">{{ voter.user.name }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <small class="text-secondary">Email</small>
+                                    <p class="fw-bold">{{ voter.user.email }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <small class="text-secondary">Aadhaar</small>
+                                    <p class="fw-bold">{{ voter.aadhaar_number }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <small class="text-secondary">Phone</small>
+                                    <p class="fw-bold">{{ voter.phone_number }}</p>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <small class="text-secondary">Status</small>
+                                    <p><span class="badge bg-warning text-dark">PENDING</span></p>
+                                </div>
+                                <div class="col-12">
+                                    <small class="text-secondary">Registered On</small>
+                                    <p class="fw-bold">{{ voter.created_at.strftime('%d %B %Y, %H:%M') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Information -->
+                    <div class="alert alert-info">
+                        <h6 class="fw-bold mb-2">
+                            <i class="fas fa-info-circle"></i> What Happens Next?
+                        </h6>
+                        <ul class="mb-0 text-start">
+                            <li>An administrator will review your registration</li>
+                            <li>Verification typically completes within 24-48 hours</li>
+                            <li>You'll receive an email once your registration is approved</li>
+                            <li>After approval, you'll receive your Voter ID</li>
+                            <li>Then you can login and cast your vote</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                        <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Go to Home
+                        </a>
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
