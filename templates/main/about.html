@@ -156,5 +156,88 @@
             </div>
         </div>
     </div>
+
+    <!-- Developer / About Section -->
+    <div class="row mt-5 pt-5">
+        <div class="col-12">
+            <hr class="my-4">
+            <h2 class="display-5 fw-bold text-primary mb-4 text-center">About the Developer</h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card developer-card shadow-lg border-0">
+                <!-- Profile Header -->
+                <div class="card-body text-center py-5">
+                    <!-- Profile Photo -->
+                    <div class="mb-4">
+                        <img src="{{ url_for('static', filename='images/profile.jpeg') }}" 
+                             alt="Developer Profile" 
+                             class="rounded-circle profile-image shadow"
+                             style="width: 180px; height: 180px; object-fit: cover; border: 5px solid #4e73df;">
+                    </div>
+
+                    <!-- Name -->
+                    <h3 class="fw-bold text-primary mb-2">Ashish Kumar</h3>
+                    <p class="text-secondary mb-4">Full Stack Developer | Web Developer</p>
+
+                    <!-- Bio -->
+                    <p class="text-secondary lead mb-4">
+                        Passionate developer with expertise in building secure, scalable web applications. 
+                        Specialized in Flask, Python, and modern web technologies. 
+                        Committed to creating solutions that make a difference.
+                    </p>
+
+                    <!-- Social Media Links -->
+                    <div class="social-links mb-4">
+                        <a href="https://github.com/Ashishkumar0002" target="_blank" class="social-btn github-btn" title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/ashish-kumar-9572b4262/" target="_blank" class="social-btn linkedin-btn" title="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://www.instagram.com/ashishz.world?igsh=MWtodXQyb3BuMGw2Ng==" target="_blank" class="social-btn instagram-btn" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="mailto:ashishzworldbusiness@gmail.com" class="social-btn email-btn" title="Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="contact-info">
+                        <div class="mb-3">
+                            <i class="fas fa-envelope text-primary me-2"></i>
+                            <span class="text-secondary">ashishzworldbusiness@gmail.com</span>
+                        </div>
+                        <div class="mb-3">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            <span class="text-secondary">Kullu, Anni, India</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-phone text-primary me-2"></i>
+                            <span class="text-secondary">+91 7876626462</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills Section -->
+                <div class="card-footer bg-light border-top">
+                    <h5 class="fw-bold text-primary mb-3">Technical Skills</h5>
+                    <div class="skills-container">
+                        <span class="skill-badge">Python</span>
+                        <span class="skill-badge">Flask</span>
+                        <span class="skill-badge">JavaScript</span>
+                        <span class="skill-badge">HTML/CSS</span>
+                        <span class="skill-badge">SQLAlchemy</span>
+                        <span class="skill-badge">Bootstrap</span>
+                        <span class="skill-badge">Web Security</span>
+                        <span class="skill-badge">Databases</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
