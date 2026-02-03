@@ -1,0 +1,425 @@
+<!-- Candidate Submit Nomination Page -->
+<!-- This page allows candidates to submit or update their nomination for the election -->
+{% extends 'base.html' %}
+
+<!-- Page content block - inherited from base.html -->
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4" style="position: sticky; top: 20px;">
+                <!-- Sidebar header with candidate info -->
+                <div class="card-body text-center">
+                    <!-- Display candidate icon -->
+                    <div style="font-size: 48px; margin-bottom: 15px; color: #4e73df;">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <!-- Display candidate name -->
+                    <h5 class="card-title">{{ logged_in_user.name }}</h5>
+                    <!-- Display candidate role badge -->
+                    <p class="text-muted mb-2">
+                        <span class="badge badge-info">Candidate</span>
+                    </p>
+                </div>
+
+                <!-- Candidate navigation menu -->
+                <div class="list-group list-group-flush">
+                    <!-- Link to dashboard -->
+                    <a href="{{ url_for('candidate.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+                    <!-- Link to submit nomination (current page) -->
+                    <a href="{{ url_for('candidate.submit_nomination') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-file-contract"></i> Submit Nomination
+                    </a>
+                    <!-- Link to view results -->
+                    <a href="{{ url_for('candidate.results') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-bar"></i> View Results
+                    </a>
+                    <!-- Logout link -->
+                    <a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="col-md-9">
+            <!-- Page header with title -->
+            <h2 class="mb-2">
+                <i class="fas fa-file-contract text-primary"></i> Submit Nomination
+            </h2>
+            <p class="text-muted mb-4">Complete this form to submit your nomination for the election</p>
+
+            <!-- Display existing nomination status if any -->
+            {% if candidate %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle"></i>
+                <strong>Existing Nomination:</strong> 
+                Your nomination status is <strong>{{ candidate.nomination_status }}</strong>. 
+                You can update your nomination using the form below.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+            <!-- Nomination form -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-edit"></i> Nomination Form
+                    </h6>
+                </div>
+
+                <div class="card-body">
+                    <!-- Form to submit nomination -->
+                    <!-- This form sends candidate details to the submit_nomination route -->
+                    <form id="nominationForm" method="POST" action="{{ url_for('candidate.submit_nomination') }}" enctype="multipart/form-data">
+                        
+                        <!-- Personal Information Section -->
+                        <h5 class="mb-3">
+                            <i class="fas fa-user"></i> Personal Information
+                        </h5>
+
+                        <!-- Full name field (read-only from user account) -->
+                        <div class="form-group mb-3">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-user"></i> Full Name
+                            </label>
+                            <!-- Display candidate's registered name -->
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="name" 
+                                value="{{ logged_in_user.name }}" 
+                                disabled>
+                            <small class="form-text text-muted">
+                                Your registered name from your account
+                            </small>
+                        </div>
+
+                        <!-- Email field (read-only from user account) -->
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope"></i> Email Address
+                            </label>
+                            <!-- Display candidate's registered email -->
+                            <input 
+                                type="email" 
+                                class="form-control" 
+                                id="email" 
+                                value="{{ logged_in_user.email }}" 
+                                disabled>
+                            <small class="form-text text-muted">
+                                Your registered email from your account
+                            </small>
+                        </div>
+
+                        <!-- Political Information Section -->
+                        <hr class="my-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-flag"></i> Political Information
+                        </h5>
+
+                        <!-- Political party field -->
+                        <div class="form-group mb-3">
+                            <label for="party_name" class="form-label">
+                                <i class="fas fa-flag"></i> Political Party / Organization
+                            </label>
+                            <!-- Input for political party name -->
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="party_name" 
+                                name="party_name" 
+                                placeholder="Enter your political party name"
+                                value="{% if candidate %}{{ candidate.party_name }}{% endif %}"
+                                required>
+                            <small class="form-text text-muted">
+                                Enter the name of your political party or organization
+                            </small>
+                        </div>
+
+                        <!-- Election symbol field (optional) -->
+                        <div class="form-group mb-3">
+                            <label for="election_symbol" class="form-label">
+                                <i class="fas fa-star"></i> Election Symbol (Optional)
+                            </label>
+                            <!-- Input for election symbol -->
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="election_symbol" 
+                                name="election_symbol" 
+                                placeholder="e.g., Lotus, Arrow, Hammer and Sickle"
+                                value="{% if candidate %}{{ candidate.party_symbol or '' }}{% endif %}">
+                            <small class="form-text text-muted">
+                                Enter your party's election symbol (if applicable)
+                            </small>
+                        </div>
+
+                        <!-- Campaign Platform Section -->
+                        <hr class="my-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-microphone"></i> Campaign Platform
+                        </h5>
+
+                        <!-- Campaign message field -->
+                        <div class="form-group mb-3">
+                            <label for="platform" class="form-label">
+                                <i class="fas fa-pencil-alt"></i> Your Campaign Platform / Message
+                            </label>
+                            <!-- Text area for campaign message -->
+                            <textarea 
+                                class="form-control" 
+                                id="platform" 
+                                name="platform" 
+                                rows="5" 
+                                placeholder="Describe your campaign platform, objectives, and vision for the constituents..."
+                                required>{% if candidate %}{{ candidate.campaign_message or '' }}{% endif %}</textarea>
+                            <small class="form-text text-muted">
+                                Share your vision, key policy points, and why voters should support you
+                            </small>
+                        </div>
+
+                        <!-- Key priorities field -->
+                        <div class="form-group mb-3">
+                            <label for="priorities" class="form-label">
+                                <i class="fas fa-list"></i> Key Priorities / Agenda
+                            </label>
+                            <!-- Text area for key priorities -->
+                            <textarea 
+                                class="form-control" 
+                                id="priorities" 
+                                name="priorities" 
+                                rows="4" 
+                                placeholder="List your top 3-5 priorities (separate with commas or line breaks)"
+                                required>{% if candidate %}{{ candidate.key_priorities or '' }}{% endif %}</textarea>
+                            <small class="form-text text-muted">
+                                Example: Education Reform, Healthcare, Infrastructure Development, etc.
+                            </small>
+                        </div>
+
+                        <!-- Contact Information Section -->
+                        <hr class="my-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-phone"></i> Contact Information
+                        </h5>
+
+                        <!-- Campaign contact phone field -->
+                        <div class="form-group mb-3">
+                            <label for="campaign_phone" class="form-label">
+                                <i class="fas fa-phone"></i> Campaign Phone Number
+                            </label>
+                            <!-- Input for campaign phone -->
+                            <input 
+                                type="tel" 
+                                class="form-control" 
+                                id="campaign_phone" 
+                                name="campaign_phone" 
+                                placeholder="10-digit phone number"
+                                pattern="[0-9]{10}"
+                                value="{% if candidate %}{{ candidate.campaign_phone or '' }}{% endif %}"
+                                required>
+                            <small class="form-text text-muted">
+                                10-digit Indian phone number for campaign inquiries
+                            </small>
+                        </div>
+
+                        <!-- Campaign website field (optional) -->
+                        <div class="form-group mb-3">
+                            <label for="campaign_website" class="form-label">
+                                <i class="fas fa-globe"></i> Campaign Website (Optional)
+                            </label>
+                            <!-- Input for campaign website -->
+                            <input 
+                                type="url" 
+                                class="form-control" 
+                                id="campaign_website" 
+                                name="campaign_website" 
+                                placeholder="https://www.example.com"
+                                value="{% if candidate %}{{ candidate.campaign_website or '' }}{% endif %}">
+                            <small class="form-text text-muted">
+                                Your campaign website URL (optional)
+                            </small>
+                        </div>
+
+                        <!-- Agreement and Submission -->
+                        <hr class="my-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-check-square"></i> Agreement & Submission
+                        </h5>
+
+                        <!-- Terms agreement checkbox -->
+                        <div class="form-check mb-3">
+                            <!-- Checkbox for agreeing to terms -->
+                            <input 
+                                class="form-check-input" 
+                                type="checkbox" 
+                                id="agreeTerms" 
+                                name="agree_terms" 
+                                required>
+                            <label class="form-check-label" for="agreeTerms">
+                                I confirm that all information provided is accurate and I agree to the 
+                                <a href="{{ url_for('main.about') }}" target="_blank">terms and conditions</a>
+                            </label>
+                        </div>
+
+                        <!-- Code of conduct checkbox -->
+                        <div class="form-check mb-4">
+                            <!-- Checkbox for agreeing to code of conduct -->
+                            <input 
+                                class="form-check-input" 
+                                type="checkbox" 
+                                id="agreeConduct" 
+                                name="agree_conduct" 
+                                required>
+                            <label class="form-check-label" for="agreeConduct">
+                                I agree to maintain ethical campaign practices and follow the code of conduct
+                            </label>
+                        </div>
+
+                        <!-- Form action buttons -->
+                        <div class="d-flex gap-2">
+                            <!-- Submit button -->
+                            <button 
+                                type="submit" 
+                                class="btn btn-primary"
+                                onclick="return validateNominationForm()">
+                                <i class="fas fa-paper-plane"></i> 
+                                {% if candidate %}Update Nomination{% else %}Submit Nomination{% endif %}
+                            </button>
+
+                            <!-- Cancel button -->
+                            <a href="{{ url_for('candidate.dashboard') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Important information box -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-lightbulb"></i> Tips for a Strong Nomination
+                    </h6>
+                </div>
+
+                <div class="card-body">
+                    <!-- Tips for candidates -->
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i> 
+                            <strong>Be Clear and Concise:</strong>
+                            Clearly articulate your vision and priorities to attract voters.
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Focus on Issues:</strong>
+                            Highlight specific issues and solutions that matter to constituents.
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Be Professional:</strong>
+                            Maintain a professional tone in all campaign communications.
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Update Information:</strong>
+                            You can update your nomination details until the election begins.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script for form validation -->
+<script>
+// Function to validate the nomination form before submission
+function validateNominationForm() {
+    // Get form elements
+    const partyName = document.getElementById('party_name').value.trim();
+    const platform = document.getElementById('platform').value.trim();
+    const priorities = document.getElementById('priorities').value.trim();
+    const campaignPhone = document.getElementById('campaign_phone').value.trim();
+    const agreeTerms = document.getElementById('agreeTerms').checked;
+    const agreeConduct = document.getElementById('agreeConduct').checked;
+    
+    // Validate party name
+    if (!partyName) {
+        alert('Please enter your political party name');
+        return false;
+    }
+    
+    // Validate platform message
+    if (!platform || platform.length < 20) {
+        alert('Please enter a campaign platform message (at least 20 characters)');
+        return false;
+    }
+    
+    // Validate priorities
+    if (!priorities || priorities.length < 10) {
+        alert('Please enter your key priorities (at least 10 characters)');
+        return false;
+    }
+    
+    // Validate phone number (must be 10 digits)
+    if (!campaignPhone || !/^\d{10}$/.test(campaignPhone)) {
+        alert('Please enter a valid 10-digit phone number');
+        return false;
+    }
+    
+    // Validate agreements
+    if (!agreeTerms) {
+        alert('Please agree to the terms and conditions');
+        return false;
+    }
+    
+    if (!agreeConduct) {
+        alert('Please agree to maintain ethical campaign practices');
+        return false;
+    }
+    
+    // If all validations pass, allow form submission
+    return true;
+}
+</script>
+
+<!-- CSS styling for the page -->
+<style>
+/* Gap utility class for buttons -->
+.gap-2 {
+    gap: 0.5rem;
+}
+
+/* Utility classes for spacing -->
+.my-4 {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+/* Form styling */
+.form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+/* Text area styling */
+textarea.form-control {
+    resize: vertical;
+}
+</style>
+{% endblock %}

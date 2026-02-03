@@ -1,0 +1,440 @@
+<!-- Candidate Results Page -->
+<!-- This page displays election results with candidate rankings and vote distribution -->
+{% extends 'base.html' %}
+
+<!-- Page content block - inherited from base.html -->
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4" style="position: sticky; top: 20px;">
+                <!-- Sidebar header with candidate info -->
+                <div class="card-body text-center">
+                    <!-- Display candidate icon -->
+                    <div style="font-size: 48px; margin-bottom: 15px; color: #4e73df;">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <!-- Display candidate name -->
+                    <h5 class="card-title">{{ logged_in_user.name }}</h5>
+                    <!-- Display candidate role badge -->
+                    <p class="text-muted mb-2">
+                        <span class="badge badge-info">Candidate</span>
+                    </p>
+                </div>
+
+                <!-- Candidate navigation menu -->
+                <div class="list-group list-group-flush">
+                    <!-- Link to dashboard -->
+                    <a href="{{ url_for('candidate.dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+                    <!-- Link to submit nomination -->
+                    <a href="{{ url_for('candidate.submit_nomination') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-file-contract"></i> Submit Nomination
+                    </a>
+                    <!-- Link to view results (current page) -->
+                    <a href="{{ url_for('candidate.results') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-chart-bar"></i> View Results
+                    </a>
+                    <!-- Logout link -->
+                    <a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="col-md-9">
+            <!-- Page header with title -->
+            <h2 class="mb-4">
+                <i class="fas fa-chart-bar text-primary"></i> Election Results
+            </h2>
+
+            <!-- Election statistics cards -->
+            <div class="row mb-4">
+                <!-- Total votes cast -->
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-left-primary">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted small m-0">Total Votes</p>
+                                    <p class="h4 mb-0">{{ total_votes }}</p>
+                                </div>
+                                <div style="font-size: 36px; color: #4e73df;">
+                                    <i class="fas fa-vote"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total candidates -->
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-left-info">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted small m-0">Candidates</p>
+                                    <p class="h4 mb-0">{{ candidates|length }}</p>
+                                </div>
+                                <div style="font-size: 36px; color: #36b9cc;">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My votes received -->
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-left-success">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted small m-0">My Votes</p>
+                                    <p class="h4 mb-0">
+                                        {% if my_candidate %}
+                                            {{ my_candidate.total_votes }}
+                                        {% else %}
+                                            0
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div style="font-size: 36px; color: #1cc88a;">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My vote percentage -->
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-left-warning">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted small m-0">My Percentage</p>
+                                    <p class="h4 mb-0">
+                                        {% if total_votes > 0 and my_candidate %}
+                                            {{ "%.1f"|format((my_candidate.total_votes / total_votes) * 100) }}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div style="font-size: 36px; color: #f6c23e;">
+                                    <i class="fas fa-chart-pie"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results visualization (if data available) -->
+            {% if candidates and total_votes > 0 %}
+            <div class="row mb-4">
+                <!-- Chart visualization -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-chart-doughnut"></i> Vote Distribution
+                            </h6>
+                        </div>
+                        <div class="card-body" style="position: relative; height: 300px;">
+                            <!-- Canvas element for Chart.js doughnut chart -->
+                            <canvas id="voteChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vote statistics -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-list"></i> Vote Summary
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <!-- Display vote summary for each candidate -->
+                            {% for candidate in candidates %}
+                            <div class="mb-3 pb-3 border-bottom" style="{% if loop.last %}border-bottom: none !important;{% endif %}">
+                                <!-- Candidate name and party -->
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <p class="h6 mb-1">{{ candidate.user.name }}</p>
+                                        <small class="text-muted">
+                                            {{ candidate.party_name }}
+                                        </small>
+                                    </div>
+                                    <!-- Vote count -->
+                                    <p class="h6 mb-0">{{ candidate.total_votes }}</p>
+                                </div>
+
+                                <!-- Progress bar for vote percentage -->
+                                <div class="progress" style="height: 8px;">
+                                    {% set percentage = (candidate.total_votes / total_votes * 100) if total_votes > 0 else 0 %}
+                                    <div 
+                                        class="progress-bar" 
+                                        role="progressbar" 
+                                        style="width: {{ percentage }}%; background-color: #4e73df;" 
+                                        aria-valuenow="{{ percentage }}" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="100">
+                                    </div>
+                                </div>
+
+                                <!-- Vote percentage -->
+                                <small class="text-muted">{{ "%.1f"|format(percentage) }}%</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <!-- No results message -->
+            <div class="alert alert-info" role="alert">
+                <i class="fas fa-info-circle"></i> 
+                Voting has not started yet or no votes have been cast. Results will appear once voting begins.
+            </div>
+            {% endif %}
+
+            <!-- Full results table -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-table"></i> Detailed Results - Candidate Rankings
+                    </h6>
+                </div>
+
+                {% if candidates %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <!-- Table headers -->
+                        <thead style="background-color: #f8f9fc;">
+                            <tr>
+                                <th width="10%">Rank</th>
+                                <th width="25%"><i class="fas fa-user"></i> Candidate Name</th>
+                                <th width="20%"><i class="fas fa-flag"></i> Political Party</th>
+                                <th width="15%" class="text-center"><i class="fas fa-vote"></i> Votes</th>
+                                <th width="20%" class="text-center"><i class="fas fa-percentage"></i> Percentage</th>
+                            </tr>
+                        </thead>
+
+                        <!-- Table body with candidate results -->
+                        <tbody>
+                            {% set ranked_candidates = candidates|sort(attribute='total_votes', reverse=true) %}
+                            {% for candidate in ranked_candidates %}
+                            <tr {% if my_candidate and candidate.id == my_candidate.id %}style="background-color: #e7f3ff; font-weight: bold;"{% endif %}>
+                                <!-- Rank with badge -->
+                                <td>
+                                    {% if loop.index == 1 %}
+                                        <span class="badge badge-success" style="font-size: 14px;">
+                                            <i class="fas fa-crown"></i> 1st
+                                        </span>
+                                    {% elif loop.index == 2 %}
+                                        <span class="badge badge-secondary" style="font-size: 14px;">
+                                            <i class="fas fa-medal"></i> 2nd
+                                        </span>
+                                    {% elif loop.index == 3 %}
+                                        <span class="badge" style="background-color: #cd7f32; font-size: 14px;">
+                                            <i class="fas fa-medal"></i> 3rd
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-light">{{ loop.index }}</span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Candidate name -->
+                                <td>
+                                    {{ candidate.user.name }}
+                                    {% if my_candidate and candidate.id == my_candidate.id %}
+                                        <span class="badge badge-primary ml-2">YOU</span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Political party -->
+                                <td>
+                                    <span class="badge badge-info">
+                                        {{ candidate.party_name }}
+                                    </span>
+                                </td>
+
+                                <!-- Vote count -->
+                                <td class="text-center">
+                                    <strong>{{ candidate.total_votes }}</strong>
+                                </td>
+
+                                <!-- Vote percentage with progress bar -->
+                                <td>
+                                    {% set percentage = (candidate.total_votes / total_votes * 100) if total_votes > 0 else 0 %}
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1">
+                                            <div class="progress mr-2" style="height: 6px;">
+                                                <div 
+                                                    class="progress-bar" 
+                                                    role="progressbar" 
+                                                    style="width: {{ percentage }}%; background-color: #4e73df;" 
+                                                    aria-valuenow="{{ percentage }}" 
+                                                    aria-valuemin="0" 
+                                                    aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span class="small font-weight-bold">{{ "%.1f"|format(percentage) }}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="card-body">
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle"></i> 
+                        No candidates are currently in the election.
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Information box -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle"></i> About These Results
+                    </h6>
+                </div>
+
+                <div class="card-body">
+                    <!-- Information about results display -->
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i> 
+                            <strong>Real-time Updates:</strong>
+                            Results are updated in real-time as votes are cast during the election.
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Transparent Counting:</strong>
+                            All votes are counted automatically by the secure voting system.
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Confidentiality:</strong>
+                            While votes are counted securely, individual voter identity is protected.
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <strong>Accurate Rankings:</strong>
+                            Candidates are ranked by total votes received, with percentages calculated accordingly.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script for Chart.js visualization and auto-refresh -->
+<script>
+// Initialize Chart.js if data is available
+{% if candidates and total_votes > 0 %}
+document.addEventListener('DOMContentLoaded', function() {
+    // Prepare data for chart
+    const candidateNames = [
+        {% for candidate in candidates %}
+            '{{ candidate.user.name }}',
+        {% endfor %}
+    ];
+    
+    const voteData = [
+        {% for candidate in candidates %}
+            {{ candidate.total_votes }},
+        {% endfor %}
+    ];
+    
+    // Color palette for chart
+    const colors = [
+        '#4e73df', '#1cc88a', '#e74c3c', '#f6c23e', 
+        '#36b9cc', '#858796', '#fd7e14', '#6f42c1'
+    ];
+    
+    // Create doughnut chart
+    const ctx = document.getElementById('voteChart').getContext('2d');
+    const voteChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: candidateNames,
+            datasets: [{
+                data: voteData,
+                backgroundColor: colors.slice(0, candidateNames.length),
+                borderColor: '#ffffff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+});
+
+// Auto-refresh results every 30 seconds
+setInterval(function() {
+    location.reload();
+}, 30000);
+{% endif %}
+</script>
+
+<!-- CSS styling for the page -->
+<style>
+/* Border accent styling for cards -->
+.border-left-primary {
+    border-left: 4px solid #4e73df !important;
+}
+
+.border-left-info {
+    border-left: 4px solid #36b9cc !important;
+}
+
+.border-left-success {
+    border-left: 4px solid #1cc88a !important;
+}
+
+.border-left-warning {
+    border-left: 4px solid #f6c23e !important;
+}
+
+/* Table row hover effect -->
+table tbody tr:hover {
+    background-color: #f8f9fc;
+}
+
+/* Utility classes -->
+.mr-2 {
+    margin-right: 0.5rem;
+}
+
+.pb-3 {
+    padding-bottom: 1rem;
+}
+
+.mb-1 {
+    margin-bottom: 0.25rem;
+}
+</style>
+{% endblock %}
