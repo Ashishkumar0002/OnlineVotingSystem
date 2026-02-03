@@ -380,8 +380,8 @@ This project is created for educational purposes.
 ## Support
 
 For issues or questions, please contact:
-- Email: support@votingsystem.com
-- Phone: +91 (011) 1234-5678
+- Email: ashishkumar7807445804@gmail.com
+- Phone: +91 7876626462
 
 ## Author
 
@@ -391,3 +391,4 @@ Online Voting System Development Team
 ---
 
 **Note**: This is a demonstration/academic project. For production use, additional security measures and compliance requirements must be implemented.
+
