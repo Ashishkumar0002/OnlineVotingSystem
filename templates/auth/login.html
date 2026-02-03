@@ -1,0 +1,105 @@
+<!-- ========================================
+     LOGIN PAGE TEMPLATE
+     ======================================== -->
+<!-- Login page for all users (Admin, Voter, Candidate) -->
+
+{% extends "base.html" %}
+
+{% block title %}Login - Online Voting System{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <!-- Page heading -->
+        <h1 class="text-center mb-4">
+            <i class="fas fa-sign-in-alt"></i> Login
+        </h1>
+        
+        <!-- Login form -->
+        <form method="POST" class="needs-validation" novalidate>
+            <!-- Role selection -->
+            <div class="form-group mb-3">
+                <label for="role" class="form-label">Login As</label>
+                <select class="form-select" id="role" name="role" required>
+                    <option value="">Select Role</option>
+                    <option value="admin">Administrator</option>
+                    <option value="voter">Voter</option>
+                    <option value="candidate">Candidate</option>
+                </select>
+                <!-- Validation message -->
+                <div class="invalid-feedback">
+                    Please select a role
+                </div>
+            </div>
+            
+            <!-- Email input -->
+            <div class="form-group mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                <!-- Validation message -->
+                <div class="invalid-feedback">
+                    Please enter a valid email
+                </div>
+            </div>
+            
+            <!-- Password input -->
+            <div class="form-group mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                <!-- Validation message -->
+                <div class="invalid-feedback">
+                    Please enter your password
+                </div>
+            </div>
+            
+            <!-- Login button -->
+            <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+        
+        <!-- Divider -->
+        <hr class="my-4">
+        
+        <!-- Registration links -->
+        <div class="text-center">
+            <p class="mb-0">Don't have an account?</p>
+            <div class="mt-2">
+                <!-- Voter registration link -->
+                <a href="{{ url_for('auth.register_voter') }}" class="btn btn-outline-primary btn-sm me-2">
+                    <i class="fas fa-user-check"></i> Register as Voter
+                </a>
+                
+                <!-- Candidate registration link -->
+                <a href="{{ url_for('auth.register_candidate') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-user-tie"></i> Register as Candidate
+                </a>
+            </div>
+        </div>
+        
+        <!-- Demo credentials info -->
+        <div class="alert alert-info mt-4 small">
+            <strong>Demo Login (for testing):</strong><br>
+            Email: admin@voting.com<br>
+            Password: Admin@123<br>
+            Role: Administrator
+        </div>
+    </div>
+</div>
+
+<!-- Script for form validation -->
+<script>
+// Enable Bootstrap validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.needs-validation');
+    form.addEventListener('submit', function(event) {
+        // Check if form is valid
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+});
+</script>
+{% endblock %}
