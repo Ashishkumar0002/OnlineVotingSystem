@@ -1,0 +1,29 @@
+# ========================================
+# REQUIREMENTS.TXT - Python Dependencies
+# ========================================
+# List of all Python packages needed to run the Online Voting System
+# Install with: pip install -r requirements.txt
+
+# Web Framework
+Flask==3.0.0
+# Werkzeug provides utilities for WSGI applications and password hashing
+Werkzeug==3.0.0
+
+# Database ORM (Object Relational Mapping)
+# SQLAlchemy helps us work with databases using Python objects
+Flask-SQLAlchemy==3.1.1
+SQLAlchemy==2.0.23
+
+# File uploads and security
+# python-dotenv helps us load environment variables from .env files
+python-dotenv==1.0.0
+
+# For development and testing
+# Flask-DebugToolbar helps debug Flask applications
+Flask-DebugToolbar==0.13.1
+
+# Additional utilities
+click==8.1.7
+itsdangerous==2.1.2
+Jinja2==3.1.2
+MarkupSafe==2.1.3
