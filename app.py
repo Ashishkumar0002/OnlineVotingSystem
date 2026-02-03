@@ -54,7 +54,20 @@ def internal_error(e):
     db.session.rollback()
     return render_template('500.html'), 500
 
-# Initialize database and register blueprints
+# Register blueprints immediately (before app runs)
+from routes.auth import auth_bp
+from routes.main import main_bp
+from routes.admin import admin_bp
+from routes.voter import voter_bp
+from routes.candidate import candidate_bp
+
+app.register_blueprint(auth_bp)
+app.register_blueprint(main_bp)
+app.register_blueprint(admin_bp)
+app.register_blueprint(voter_bp)
+app.register_blueprint(candidate_bp)
+
+# Initialize database and create tables on first run
 def init_app():
     """Initialize the application"""
     with app.app_context():
@@ -82,23 +95,12 @@ def init_app():
             db.session.add(admin)
             db.session.commit()
             print("✓ Admin user created")
-        
-        # Register blueprints
-        from routes.auth import auth_bp
-        from routes.main import main_bp
-        from routes.admin import admin_bp
-        from routes.voter import voter_bp
-        from routes.candidate import candidate_bp
-        
-        app.register_blueprint(auth_bp)
-        app.register_blueprint(main_bp)
-        app.register_blueprint(admin_bp)
-        app.register_blueprint(voter_bp)
-        app.register_blueprint(candidate_bp)
 
 # Create upload folder
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+# Initialize app immediately
+init_app()
+
 if __name__ == '__main__':
-    init_app()
     app.run(debug=False, host='0.0.0.0', port=5000)
