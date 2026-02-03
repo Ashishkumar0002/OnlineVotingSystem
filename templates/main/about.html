@@ -1,0 +1,160 @@
+<!-- ========================================
+     ABOUT US PAGE
+     ======================================== -->
+
+{% extends "base.html" %}
+
+{% block title %}About Us - Online Voting System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <!-- Page heading -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h1 class="display-4 fw-bold text-primary mb-3">
+                <i class="fas fa-info-circle"></i> About Us
+            </h1>
+        </div>
+    </div>
+    
+    <!-- About section -->
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title fw-bold mb-3">Online Voting System</h2>
+                    
+                    <p class="lead text-secondary">
+                        The Online Voting System is a modern, secure, and transparent platform designed to 
+                        make democratic participation accessible to everyone.
+                    </p>
+                    
+                    <h4 class="fw-bold mt-4 mb-3">Our Mission</h4>
+                    <p class="text-secondary">
+                        Our mission is to strengthen democracy by providing a secure, accessible, and transparent 
+                        platform for online voting. We believe that every citizen has the right to participate in 
+                        democratic processes without barriers.
+                    </p>
+                    
+                    <h4 class="fw-bold mt-4 mb-3">Why Online Voting?</h4>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <strong>Accessible:</strong> Vote from anywhere, anytime
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <strong>Secure:</strong> Advanced security measures protect your data
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <strong>Transparent:</strong> Real-time results and verification
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <strong>Fair:</strong> Each vote counts equally
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success"></i>
+                            <strong>Efficient:</strong> Quick and hassle-free process
+                        </li>
+                    </ul>
+                    
+                    <h4 class="fw-bold mt-4 mb-3">How It Works</h4>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title fw-bold">1. Register</h6>
+                                    <p class="card-text small">Create your account with valid Aadhaar details</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title fw-bold">2. Verify</h6>
+                                    <p class="card-text small">Admin approves your registration</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title fw-bold">3. Authenticate</h6>
+                                    <p class="card-text small">Verify your identity using OTP</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title fw-bold">4. Vote</h6>
+                                    <p class="card-text small">Cast your vote for your preferred candidate</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="fw-bold mt-4 mb-3">Security Features</h4>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-lock text-primary"></i>
+                            <strong>OTP Verification:</strong> Two-factor authentication for voter verification
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-lock text-primary"></i>
+                            <strong>Aadhaar Validation:</strong> Unique identity verification system
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-lock text-primary"></i>
+                            <strong>One Vote Per Voter:</strong> System prevents duplicate voting
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-lock text-primary"></i>
+                            <strong>Secret Ballot:</strong> Vote secrecy is maintained
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar with key stats -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Quick Facts</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-secondary">Founded</small>
+                        <p class="fw-bold">2026</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-secondary">Platform</small>
+                        <p class="fw-bold">Web & Mobile</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-secondary">Technology</small>
+                        <p class="fw-bold">Cloud-Based</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-secondary">Security Level</small>
+                        <p class="fw-bold">Military Grade</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Call to action -->
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title fw-bold mb-3">Ready to Vote?</h5>
+                    <a href="{{ url_for('auth.register_voter') }}" class="btn btn-light btn-sm">
+                        Register Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

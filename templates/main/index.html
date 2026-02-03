@@ -1,0 +1,294 @@
+<!-- ========================================
+     MAIN DASHBOARD / HOME PAGE
+     ======================================== -->
+<!-- This is the landing page accessible to everyone -->
+<!-- Includes awareness slider and voting information -->
+
+{% extends "base.html" %}
+
+<!-- Page title shown in browser tab -->
+{% block title %}Home - Online Voting System{% endblock %}
+
+<!-- Main content -->
+{% block content %}
+<div class="container-fluid py-5">
+    <!-- Welcome section with large heading -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h1 class="display-4 fw-bold text-primary mb-3">
+                Welcome to Online Voting System
+            </h1>
+            <p class="lead text-secondary">
+                Exercise your right to vote. Your voice matters. Every vote counts.
+            </p>
+        </div>
+    </div>
+    
+    <!-- ===== AWARENESS SLIDER (CAROUSEL) ===== -->
+    <!-- Bootstrap carousel showing voting awareness messages -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div id="awarenessCarousel" class="carousel slide" data-bs-ride="carousel">
+                <!-- Carousel indicators (dots at bottom) -->
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#awarenessCarousel" data-bs-slide-to="0" class="active"></button>
+                    <button type="button" data-bs-target="#awarenessCarousel" data-bs-slide-to="1"></button>
+                    <button type="button" data-bs-target="#awarenessCarousel" data-bs-slide-to="2"></button>
+                    <button type="button" data-bs-target="#awarenessCarousel" data-bs-slide-to="3"></button>
+                </div>
+                
+                <!-- Carousel slides -->
+                <div class="carousel-inner">
+                    <!-- SLIDE 1: Your Vote, Your Voice -->
+                    <div class="carousel-item active" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 400px;">
+                        <div class="carousel-overlay">
+                            <div class="carousel-content">
+                                <h2>Your Vote, Your Voice</h2>
+                                <p>Voting strengthens democracy and gives power to the people</p>
+                                <a href="{{ url_for('auth.register_voter') }}" class="btn btn-primary btn-lg">Register to Vote</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SLIDE 2: Every Vote Matters -->
+                    <div class="carousel-item" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); height: 400px;">
+                        <div class="carousel-overlay">
+                            <div class="carousel-content">
+                                <h2>Every Vote Matters</h2>
+                                <p>One vote can change the future and shape the nation</p>
+                                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Login to Vote</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SLIDE 3: Secure & Transparent -->
+                    <div class="carousel-item" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); height: 400px;">
+                        <div class="carousel-overlay">
+                            <div class="carousel-content">
+                                <h2>Secure & Transparent Voting</h2>
+                                <p>Technology-driven fair elections with complete transparency</p>
+                                <a href="{{ url_for('main.results') }}" class="btn btn-primary btn-lg">View Results</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SLIDE 4: Responsible Citizen -->
+                    <div class="carousel-item" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); height: 400px;">
+                        <div class="carousel-overlay">
+                            <div class="carousel-content">
+                                <h2>Be a Responsible Citizen</h2>
+                                <p>Participate in democracy and shape the nation's future</p>
+                                <a href="{{ url_for('main.about') }}" class="btn btn-primary btn-lg">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Carousel navigation buttons -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#awarenessCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#awarenessCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===== INFORMATION CARDS SECTION ===== -->
+    <!-- Four cards explaining voting importance and process -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4 fw-bold">Why Online Voting?</h2>
+        </div>
+    </div>
+    
+    <!-- Information cards row -->
+    <div class="row">
+        <!-- Card 1: Importance of Voting -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <!-- Card icon -->
+                    <i class="fas fa-heart text-danger" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    
+                    <!-- Card title -->
+                    <h5 class="card-title fw-bold">Importance of Voting</h5>
+                    
+                    <!-- Card description -->
+                    <p class="card-text text-secondary">
+                        Voting is the foundation of democracy. Every vote strengthens the democratic process 
+                        and ensures your voice is heard in government decisions.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 2: How Online Voting Works -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <!-- Card icon -->
+                    <i class="fas fa-laptop" style="font-size: 3rem; color: #4e73df; margin-bottom: 1rem;"></i>
+                    
+                    <!-- Card title -->
+                    <h5 class="card-title fw-bold">How It Works</h5>
+                    
+                    <!-- Card description -->
+                    <p class="card-text text-secondary">
+                        Register, verify your identity with OTP, and cast your vote for your 
+                        preferred candidate. The process is simple and transparent.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 3: Secure Authentication -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <!-- Card icon -->
+                    <i class="fas fa-lock" style="font-size: 3rem; color: #1cc88a; margin-bottom: 1rem;"></i>
+                    
+                    <!-- Card title -->
+                    <h5 class="card-title fw-bold">Secure & Safe</h5>
+                    
+                    <!-- Card description -->
+                    <p class="card-text text-secondary">
+                        Your identity is verified using OTP (One Time Password). Only eligible voters 
+                        can participate in elections. Your data is protected and secure.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 4: Easy & Fast -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <!-- Card icon -->
+                    <i class="fas fa-bolt" style="font-size: 3rem; color: #f6c23e; margin-bottom: 1rem;"></i>
+                    
+                    <!-- Card title -->
+                    <h5 class="card-title fw-bold">Fast & Easy</h5>
+                    
+                    <!-- Card description -->
+                    <p class="card-text text-secondary">
+                        The entire voting process takes just a few minutes. No long queues, 
+                        no paperwork. Vote anytime from anywhere.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===== CALL TO ACTION SECTION ===== -->
+    <!-- Encourage users to register and vote -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center p-5">
+                    <h3 class="card-title fw-bold mb-3">Ready to Make a Difference?</h3>
+                    <p class="card-text mb-4" style="font-size: 1.1rem;">
+                        Join thousands of voters already participating in online elections.
+                        Register now and exercise your right to vote.
+                    </p>
+                    
+                    <!-- Action buttons -->
+                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                        <!-- Register as voter button -->
+                        <a href="{{ url_for('auth.register_voter') }}" class="btn btn-light btn-lg">
+                            <i class="fas fa-user-check"></i> Register as Voter
+                        </a>
+                        
+                        <!-- Register as candidate button -->
+                        <a href="{{ url_for('auth.register_candidate') }}" class="btn btn-light btn-lg">
+                            <i class="fas fa-user-tie"></i> Register as Candidate
+                        </a>
+                        
+                        <!-- Login button -->
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-sign-in-alt"></i> Already Registered? Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===== FAQ SECTION ===== -->
+    <!-- Frequently Asked Questions -->
+    <div class="row mt-5 mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4 fw-bold">Frequently Asked Questions</h2>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <!-- Accordion for FAQ -->
+            <div class="accordion" id="faqAccordion">
+                <!-- FAQ Item 1 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                            Who is eligible to vote?
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Any citizen of age 18 or above with valid Aadhaar card can register as a voter. 
+                            Registration is subject to admin approval.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 2 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                            Can I vote multiple times?
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            No, each voter can vote only once in an election. The system ensures that 
+                            only one vote is registered per voter.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 3 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                            How is my vote kept secret?
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Your vote is kept completely confidential. We don't store which voter voted for 
+                            which candidate - only the vote counts are maintained.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 4 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                            What if I forget my voter ID?
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            You can use your registered email address instead of voter ID during voting. 
+                            If you need help, contact the admin team.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
