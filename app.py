@@ -80,6 +80,7 @@ def init_app():
         from models.voting_log import VotingLog
         
         # Create all database tables
+       with app.app_context():
         db.create_all()
         
         # Create default admin user if it doesn't exist
@@ -104,5 +105,7 @@ init_app()
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=5000)
+
+
 
 
