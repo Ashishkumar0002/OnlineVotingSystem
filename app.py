@@ -24,7 +24,7 @@ from models import db
 app = Flask(__name__)
 
 # Set Flask configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/voting_system.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'voting-system-secret-key-change-in-production'
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'static/uploads')
@@ -104,4 +104,5 @@ init_app()
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=5000)
+
 
