@@ -23,11 +23,14 @@ from models import db
 # Create Flask application instance
 app = Flask(__name__)
 
+# Get absolute path to application directory
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Set Flask configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(APP_DIR, "voting_system.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'voting-system-secret-key-change-in-production'
-app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'static/uploads')
+app.config['UPLOAD_FOLDER'] = os.path.join(APP_DIR, 'static/uploads')
 
 # Initialize database with Flask app
 db.init_app(app)
@@ -54,20 +57,7 @@ def internal_error(e):
     db.session.rollback()
     return render_template('500.html'), 500
 
-# Register blueprints immediately (before app runs)
-from routes.auth import auth_bp
-from routes.main import main_bp
-from routes.admin import admin_bp
-from routes.voter import voter_bp
-from routes.candidate import candidate_bp
-
-app.register_blueprint(auth_bp)
-app.register_blueprint(main_bp)
-app.register_blueprint(admin_bp)
-app.register_blueprint(voter_bp)
-app.register_blueprint(candidate_bp)
-
-# Initialize database and create tables on first run
+# Initialize database and register blueprints
 def init_app():
     """Initialize the application"""
     with app.app_context():
@@ -95,16 +85,23 @@ def init_app():
             db.session.add(admin)
             db.session.commit()
             print("✓ Admin user created")
+        
+        # Register blueprints
+        from routes.auth import auth_bp
+        from routes.main import main_bp
+        from routes.admin import admin_bp
+        from routes.voter import voter_bp
+        from routes.candidate import candidate_bp
+        
+        app.register_blueprint(auth_bp)
+        app.register_blueprint(main_bp)
+        app.register_blueprint(admin_bp)
+        app.register_blueprint(voter_bp)
+        app.register_blueprint(candidate_bp)
 
 # Create upload folder
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# Initialize app immediately
-init_app()
-
 if __name__ == '__main__':
+    init_app()
     app.run(debug=False, host='0.0.0.0', port=5000)
-
-
-
-
