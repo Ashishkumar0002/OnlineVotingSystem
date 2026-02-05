@@ -27,7 +27,9 @@ app = Flask(__name__)
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Set Flask configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(APP_DIR, "voting_system.db")}'
+# Use forward slashes for SQLite URI (convert backslashes on Windows)
+db_path = os.path.join(APP_DIR, "voting_system.db").replace("\\", "/")
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'voting-system-secret-key-change-in-production'
 app.config['UPLOAD_FOLDER'] = os.path.join(APP_DIR, 'static/uploads')
