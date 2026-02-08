@@ -10,6 +10,10 @@ import logging
 from datetime import datetime
 from werkzeug.security import generate_password_hash
 
+# DEFINE APP BASE DIRECTORY FIRST
+# -------------------------------
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Suppress Flask and Werkzeug warnings
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -112,4 +116,5 @@ except Exception as e:
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=5000)
+
 
