@@ -24,12 +24,12 @@ from models import db
 app = Flask(__name__)
 
 # Get absolute path to application directory
-APP_DIR = os.path.dirname(os.path.abspath(__file__))
+INSTANCE_DIR = os.path.join(APP_DIR, "instance")
+os.makedirs(INSTANCE_DIR, exist_ok=True)
 
-# Set Flask configuration
-# Use forward slashes for SQLite URI (convert backslashes on Windows)
-db_path = os.path.join(APP_DIR, "voting_system.db").replace("\\", "/")
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+db_path = os.path.join(INSTANCE_DIR, "voting_system.db").replace("\\", "/")
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'voting-system-secret-key-change-in-production'
 app.config['UPLOAD_FOLDER'] = os.path.join(APP_DIR, 'static/uploads')
@@ -112,3 +112,4 @@ except Exception as e:
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=5000)
+
