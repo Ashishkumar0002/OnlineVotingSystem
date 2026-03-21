@@ -386,7 +386,7 @@ For issues or questions, please contact:
 ## Author
 
 Online Voting System Development Team
-
+2026
 
 ---
 
